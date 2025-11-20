@@ -6,12 +6,12 @@ using System.Text;
 
 namespace Beadando_VM_KH.model
 {
-    internal class Sensor
+    internal class Sensor : IDisposable
     {
         private readonly Random Rnd;
         private readonly Timer Timer;
 
-        private readonly Guid Id;
+        public readonly Guid Id;
         public readonly SensorType Type;
         public double Value { get; private set; }
         public event Action<object, double>? OnValueChanged;
@@ -38,6 +38,16 @@ namespace Beadando_VM_KH.model
             OnValueChanged?.Invoke(this, Value);
         }
 
+        public override string? ToString()
+        {
+            return $"Id: {Id}, Type: {Type}, Value: {Value}";
+        }
+
+        public void Dispose()
+        {
+            Timer.Dispose();
+            OnValueChanged = null;
+        }
     }
     public enum SensorType
     {
