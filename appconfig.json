@@ -1,0 +1,7 @@
+{
+  "UseConnectionString": "DbConnection",
+  "RunInDevEnvironment": true,
+  "ConnectionStrings": {
+    "DbConnection": "Server=(localdb)\\MSSQLLocalDB;Database=LocalDBTest;Trusted_Connection=True;"
+  }
+}

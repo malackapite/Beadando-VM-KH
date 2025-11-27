@@ -1,3 +1,5 @@
+﻿using Microsoft.Extensions.Configuration;
+using SimpleLocalDB;
 ﻿using Beadando_VM_KH.Commands;
 using Beadando_VM_KH.model;
 using Newtonsoft.Json;
@@ -8,6 +10,12 @@ namespace Beadando_VM_KH
 {
     internal partial class Program
     {
+        static readonly IConfiguration config = new ConfigurationBuilder()
+            .SetBasePath(AppDbContext.BasePath)
+            .AddJsonFile("appconfig.json", false, true)
+            .Build()
+        ;
+            
         static void Main()
         {
             CentralStation centralStation = new();
