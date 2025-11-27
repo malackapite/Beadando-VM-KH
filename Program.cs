@@ -18,7 +18,7 @@ namespace Beadando_VM_KH
             
         static void Main()
         {
-            CentralStation centralStation = new();
+            CentralStation centralStation = new(config);
             Dictionary<string, ICommand> commands = [];
 
             commands["add"] = new AddCommand(centralStation);

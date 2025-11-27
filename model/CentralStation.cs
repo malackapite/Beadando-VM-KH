@@ -1,7 +1,13 @@
-﻿namespace Beadando_VM_KH.model
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using SimpleLocalDB;
+using System.ComponentModel.DataAnnotations;
+
+namespace Beadando_VM_KH.model
 {
-    internal class CentralStation
+    internal class CentralStation(IConfiguration config)
     {
+        private readonly IConfiguration _config = config;
         private readonly List<Sensor> _Sensors = [];
         public IReadOnlyList<Sensor> Sensors => _Sensors.AsReadOnly();
         public Sensor this[int ix]
@@ -25,7 +31,14 @@
 
         private void SensorValueReceived(object sender, double value)
         {
-            //throw new NotImplementedException();
+            using AppDbContext<SensorRecord> context = new(config);
+            context.values.Add(new SensorRecord
+            (
+                ((Sensor)sender).Id,
+                value,
+                DateTime.Now
+            ));
+            context.SaveChanges();
         }
     }
 }
