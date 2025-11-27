@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <ProjectReference Include="SimpleLocalDB\SimpleLocalDB.csproj" />
     <Compile Remove="SimpleLocalDB\**\*.cs" />
   </ItemGroup>
