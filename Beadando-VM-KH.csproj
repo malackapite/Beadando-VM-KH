@@ -9,7 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleLocalDB\SimpleLocalDB.csproj" />
+    <ProjectReference Include="SimpleLocalDB\SimpleLocalDB.csproj" />
+    <Compile Remove="SimpleLocalDB\**\*.cs" />
   </ItemGroup>
 
 </Project>
