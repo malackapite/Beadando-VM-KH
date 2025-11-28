@@ -14,10 +14,10 @@ namespace SimpleLocalDB
         protected AppDbContext(IConfiguration config) : base()
         {
             this.config = config;
-            const string RunInDevEnvironment = nameof(RunInDevEnvironment);
             if (!alreadyWiped)
             {
-                if (bool.Parse(config[RunInDevEnvironment] ?? throw new MissingConfigFileFieldException(RunInDevEnvironment)))
+                string? runInDevEnvironment = config["RunInDevEnvironment"];
+                if (runInDevEnvironment is not null && bool.Parse(runInDevEnvironment))
                 {
                     Database.EnsureDeleted();
                 }
