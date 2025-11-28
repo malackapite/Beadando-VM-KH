@@ -29,7 +29,8 @@ namespace SimpleLocalDB
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             const string UseConnectionString = nameof(UseConnectionString);
-            optionsBuilder.UseSqlServer(config.GetConnectionString(config[UseConnectionString] ?? throw new MissingConfigFileFieldException(UseConnectionString)));
+            string? connectionString = config.GetConnectionString(config[UseConnectionString] ?? throw new MissingConfigFileFieldException(UseConnectionString));
+            optionsBuilder.UseSqlServer(connectionString is not null ? string.Format(connectionString, AppContext.BaseDirectory) : null);
         }
     }
 
