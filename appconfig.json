@@ -1,7 +1,7 @@
 {
   "UseConnectionString": "DbConnection",
-  "RunInDevEnvironment": true,
+  "RunInDevEnvironment": false,
   "ConnectionStrings": {
-    "DbConnection": "Server=(localdb)\\MSSQLLocalDB;Database=LocalDBTest;Integrated Security=True;AttachDbFilename={0}LocalDBTest.mdf"
+    "DbConnection": "Server=(localdb)\\MSSQLLocalDB;Database=LocalDBTest;Integrated Security=True;AttachDbFilename={0}LocalDBTest.mdf;"
   }
 }

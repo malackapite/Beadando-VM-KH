@@ -5,8 +5,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Beadando_VM_KH.model
 {
+    /// <summary>
+    /// Central station to manage sensors and their data.
+    /// It allows registering and removing sensors, and handles value change events to store data in the database.
+    /// </summary>
+    /// <param name="config"></param>
+    /// <author>malackapite</author>
     internal class CentralStation(IConfiguration config)
     {
+
         private readonly IConfiguration _config = config;
         private readonly List<Sensor> _Sensors = [];
         public IReadOnlyList<Sensor> Sensors => _Sensors.AsReadOnly();

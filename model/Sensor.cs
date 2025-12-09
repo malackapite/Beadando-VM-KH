@@ -6,6 +6,10 @@ using System.Text;
 
 namespace Beadando_VM_KH.model
 {
+    /// <summary>
+    /// Represents a sensor that generates random values based on its type at random intervals.
+    /// </summary>
+    /// <author>malackapite</author>
     internal class Sensor : IDisposable
     {
         private readonly Random Rnd;
@@ -21,7 +25,7 @@ namespace Beadando_VM_KH.model
             Rnd = new();
             Id = Guid.NewGuid();
             Type = type;
-            Timer = new(_ => SetValue(), null, 0, Rnd.Next(100, 1001));
+            Timer = new(_ => SetValue(), null, 0, Rnd.Next(1000, 10001));
             centralStation.RegisterSensor(this);
         }
         void SetValue()
