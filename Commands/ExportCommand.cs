@@ -5,10 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Beadando_VM_KH.Commands
 {
+    /// <summary>
+    /// Represents a method that saves a list of sensors to a file.
+    /// </summary>
+    /// <param name="filename">The name of the output file including extension.</param>
+    /// <param name="sensors">The sensors to be exported.</param>
+    delegate void SaveToFileDelegate(string filename, IReadOnlyList<Sensor> sensors);
 
     /// <summary>
     /// Represents a command that exports current sensor data to a JSON file.
@@ -49,7 +55,7 @@ namespace Beadando_VM_KH.Commands
         public string Description => "Exports the current sensor data to a file.";
 
         /// <summary>
-        /// Executes the command by exporting sensor data to the specified JSON file.
+        /// Executes the command by exporting sensor data to the specified JSON/XML file.
         /// </summary>
         /// <param name="args">
         /// Command-line arguments:
@@ -86,12 +92,44 @@ namespace Beadando_VM_KH.Commands
                         return;
                     }
                 }
-                using StreamWriter writer = new(match.Groups[1].Value);
-                writer.Write(JsonConvert.SerializeObject(sensors));
+
+                SaveToFileDelegate saveToFileDelegate = match.Groups[1].Value.EndsWith(".xml", StringComparison.OrdinalIgnoreCase)
+                    ? new SaveToFileDelegate(SaveToXmlFile)
+                    : new SaveToFileDelegate(SaveToJsonFile);
+                saveToFileDelegate(match.Groups[1].Value, sensors);
                 Console.WriteLine($"Exported sensor data to {match.Groups[1].Value}");
             }
         }
+
+        /// <summary>
+        /// Regular expression used to detect quoted strings in the input command.
+        /// </summary>
         [GeneratedRegex("\"([^\"]*)\"")]
         private partial Regex QuotedStringRegex();
+
+        /// <summary>
+        /// Saves the provided sensors to a JSON file.
+        /// </summary>
+        /// <param name="filename">The output JSON file name.</param>
+        /// <param name="sensors">The list of sensors to serialize.</param>
+        /// </summary>
+        void SaveToJsonFile(string filename, IReadOnlyList<Sensor> sensors)
+        {
+            using StreamWriter writer = new(filename);
+            writer.Write(JsonConvert.SerializeObject(sensors, Formatting.Indented));
+        }
+
+        /// <summary>
+        /// Saves the provided sensors to an XML file using <see cref="XmlSerializer"/>.
+        /// </summary>
+        /// <param name="filename">The output XML file name.</param>
+        /// <param name="sensors">The list of sensors to serialize.</param>
+        /// </summary>
+        void SaveToXmlFile(string filename, IReadOnlyList<Sensor> sensors)
+        {
+            var serializer = new XmlSerializer(typeof(List<Sensor>));
+            using var writer = new StreamWriter(filename);
+            serializer.Serialize(writer, sensors.ToList());
+        }
     }
 }

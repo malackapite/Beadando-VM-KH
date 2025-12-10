@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace Beadando_VM_KH.model
 {
@@ -21,7 +22,7 @@ namespace Beadando_VM_KH.model
     /// </param>
     /// 
     /// <author>malackapite</author>
-    internal class Sensor : IDisposable
+    public class Sensor : IDisposable
     {
         /// <summary>
         /// Random number generator used for simulated measurement generation.
@@ -36,17 +37,19 @@ namespace Beadando_VM_KH.model
         /// <summary>
         /// Gets the unique identifier of the simulated sensor.
         /// </summary>
-        public readonly Guid Id;
-        
+        [XmlAttribute("id")]
+        public Guid Id { get; init; }
+
         /// <summary>
         /// Gets the measurement type that defines the sensor's simulated value range.
         /// </summary>
-        public readonly SensorType Type;
+        [XmlAttribute("type")]
+        public SensorType Type { get; init; }
 
         /// <summary>
-        /// Gets the most recently generated simulated value.
+        /// Gets the generated simulated values.
         /// </summary>
-        public double Value { get; private set; }
+        public List<double> Values { get; private set; } = [];
 
         /// <summary>
         /// Occurs whenever the sensor generates a new simulated value.
@@ -69,12 +72,14 @@ namespace Beadando_VM_KH.model
             centralStation.RegisterSensor(this);
         }
 
+        public Sensor() : this(null!, SensorType.Temperature) { }
+
         /// <summary>
         /// Generates a new simulated value based on the sensor type and raises the event.
         /// </summary>
         void SetValue()
         {
-            Value = Type switch
+            Values.Add(Type switch
             {
                 SensorType.Temperature => Rnd.Next(-20, 40) + Rnd.NextDouble(),
                 SensorType.Humidity => Rnd.Next(0, 100) + Rnd.NextDouble(),
@@ -82,8 +87,8 @@ namespace Beadando_VM_KH.model
                 SensorType.Light => Rnd.Next(0, 1000) + Rnd.NextDouble(),
                 SensorType.Motion => Rnd.Next(0, 2),
                 _ => throw new ArgumentOutOfRangeException()
-            };
-            OnValueChanged?.Invoke(this, Value);
+            });
+            OnValueChanged?.Invoke(this, Values.Last());
         }
 
         /// <summary>
@@ -91,7 +96,7 @@ namespace Beadando_VM_KH.model
         /// </summary>
         public override string? ToString()
         {
-            return $"Id: {Id}, Type: {Type}, Value: {Value}";
+            return $"Id: {Id}, Type: {Type}, Values: {string.Join(", ", Values.Select(x => $"{x:f2}"))}";
         }
 
         /// <summary>
