@@ -3,80 +3,78 @@ using Microsoft.Extensions.Configuration;
 
 namespace SimpleLocalDB
 {
+    /// <summary>
+    /// Instantiates an <see cref="AppDbContext"/> object with a given configuration file manager object.
+    /// </summary>
+    /// <param name="config">Configuration file manager.</param>
+    /// <author>KeresztesHunor</author>
     public abstract class AppDbContext(IConfiguration config) : DbContext()
     {
-        /*
-         * Ez a teljes elérési útvonala a solution-t tartalmazó mappának.
-         * Az AppContext.BaseDirectory a {solution-t tartalmazó mappa útvonala}/bin/Debug/net9.0/ mappájának az elérési útvonalát adja,
-         * a "!.Parent!.Parent!.Parent"-tel pedig eljutunk belőle a solution-t tartalmazó mappához,
-         * aminek lekérjük a teljes elérési útvonalát a "!.FullName"-mel.
-         */
+        /// <summary>
+        /// The absolute path of the directory the project solution is in.
+        /// </summary>
         public static readonly string BasePath = Directory.GetParent(AppContext.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
 
-        // Konfigurációs file-ból való adatlekérdezésre szolgáló kezelő.
+        /// <summary>
+        /// Configuration file manager object.
+        /// </summary>
         IConfiguration config { get; } = config;
 
+        /// <summary>
+        /// Configures database connection from the given configuration file data.
+        /// </summary>
+        /// <remarks>
+        /// Configures the database to use SQLServer connection.
+        /// </remarks>
+        /// <param name="optionsBuilder">Configuration builder object</param>
+        /// <exception cref="InvalidOrMissingConfigFileFieldException">If the "UseConnectionString" field is missing from the configuration file, or its value is <see langword="null"/>.</exception>
+        /// <exception cref="FormatException">If the connection string in the configuration file isn't formatted correctly for <see cref="string.Format(string, object?)"/>.</exception>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            /*
-             * Általában az appconfig.json ConnectionString mezőjében tárolt connection string-ek közül használandó mező nevét direktben itt a kódban szokták megadni,
-             * de mivel a DbContext osztály a dll-ben van benne, ezért az őt használó projekt nem tudja megváltoztatni,
-             * ezért azt is az appconfig.json file-ból határozzuk meg a "UseConnectionString" mezőben.
-             */
             const string UseConnectionString = nameof(UseConnectionString);
-            string? connectionString = config.GetConnectionString(config[UseConnectionString] ?? throw new MissingConfigFileFieldException(UseConnectionString));
-            /*
-             * Az appconfig.json file-ban a connection string-ben az "AttachDbFilename" paraméternek a file teljes elérési útvonalát kell megadni,
-             * amit a program saját maga keres ki a kódban,
-             * tehát a connection string-ben egy {0} mezővel jeleztük az beszúrandó elérési útvonal helyét,
-             * hogy be lehessen szúrni egy string.Format() segítségével.
-             */
+            string? connectionString = config.GetConnectionString(config[UseConnectionString] ?? throw new InvalidOrMissingConfigFileFieldException(UseConnectionString));
             optionsBuilder.UseSqlServer(connectionString is not null ? string.Format(connectionString, AppContext.BaseDirectory) : null);
         }
     }
 
-    /*
-     * Leszármazott generikus osztály, ami azért van elkülönítve a nem generikus ősosztályától,
-     * mert a különböző típusokkal használt generikus osztályok (illetve struct-ok és metódusok) különbözőnek számítanak
-     * és ezért a bennük lévő statikus mezők is azokhoz a meghatározott típusokhoz tartoznak.
-     * Mivel az ősosztályban lévő BasePath mezőnek nem kell egyedinek lennie a különböző típusokkal megadott AppDbContext<T> típusok példányai között,
-     * a nem generikus ősosztályban van, így az összes különböző típussal megadott leszármazott AppDbContext<T> osztálypéldány között is ugyanaz,
-     * de az alreadyWiped mezőnek pedig a különböző típusokkal használt AppDbContext<T> osztálypédányok között kell megegyeznie,
-     * ezért a leszármazott generikus típusú osztályban van.
-     */
+    /// <summary>
+    /// A database context <see langword="class"/>, which can be specified to use any model to create a database from, connect to and manipulate data in.
+    /// </summary>
+    /// <remarks>
+    /// See <see href="https://tinyurl.com/2x3x4yrz">documentation</see> for more details.
+    /// </remarks>
+    /// <typeparam name="T">The model type to be used for the database.</typeparam>
+    /// <author>KeresztesHunor</author>
     public class AppDbContext<T> : AppDbContext where T : class
     {
-        /*
-         * Ez egy flag, ami azt jelöli az AppDbContext<T> osztály példányosításakor,
-         * hogy volt-e már a ezelőtt a példányosítás előtt lenullázva a hozzátartozó adatbázis.
-         */
+        /// <summary>
+        /// Indicates that the database has already been attempted to be wiped when running in dev mode.
+        /// </summary>
+        /// <remarks>
+        /// Is static across every instance of every unique type <see cref="AppDbContext{T}"/> is used with.
+        /// </remarks>
         static bool alreadyWiped = false;
 
+        /// <summary>
+        /// Represents the table within the database.
+        /// </summary>
         public DbSet<T> values { get; private set; }
 
+        /// <summary>
+        /// Instantiates an <see cref="AppDbContext{T}"/> object with a given configuration file manager object.
+        /// </summary>
+        /// <param name="config">Configuration file manager.</param>
         public AppDbContext(IConfiguration config) : base(config)
         {
             if (!alreadyWiped)
             {
-                /*
-                 * Az appconfig.json file-ban van egy "RunInDevEnvironment" mező,
-                 * ami arra szolgál, hogy ha igazra van állítva az értéke (és nem hiányzik a mező és helyesen boolean értéket kap),
-                 * akkor "dev mód"-ban fut a program, ami azt jelenti,
-                 * hogy az adatbázis minden futtatásnál újra lesz generálva (az összes adat elvesztésével együtt).
-                 * Ez arra kellett, hogy ha fejlesztés közben megváltozott a modell szerkezete,
-                 * akkor a belőle generált adatbázist frissíteni kell,
-                 * amit csak az adatbázis kitörlésével és újragenerálásával lehet elérni,
-                 * mert a migrációk használata nem volt opció (dokumentációban részletezve).
-                 */
                 string? runInDevEnvironment = config["RunInDevEnvironment"];
                 if (runInDevEnvironment is not null && (!bool.TryParse(runInDevEnvironment, out bool result) || result))
                 {
-                    // Ha létezik az adatbázis, törölje ki.
                     Database.EnsureDeleted();
                 }
                 alreadyWiped = true;
             }
-            // Ha nem létezik az adatbázis, generálja le.
             Database.EnsureCreated();
         }
     }
