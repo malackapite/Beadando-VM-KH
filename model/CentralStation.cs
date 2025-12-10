@@ -21,7 +21,7 @@ namespace Beadando_VM_KH.model
     /// </param>
     /// 
     /// <author>malackapite</author>
-    internal class CentralStation(IConfiguration config)
+    public class CentralStation(IConfiguration config)
     {
         /// <summary>
         /// Application configuration used when creating the database context.

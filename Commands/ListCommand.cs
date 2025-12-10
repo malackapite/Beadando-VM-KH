@@ -15,12 +15,12 @@ namespace Beadando_VM_KH.Commands
     /// <list type="bullet">
     /// <item><c>Id</c>: the sensor's unique identifier (GUID)</item>
     /// <item><c>Type</c>: the sensor's category (e.g., Light, Temperature)</item>
-    /// <item><c>Value</c>: the sensor's current measured value.</item>
+    /// <item><c>_value</c>: the sensor's current measured value.</item>
     /// </list>
     /// Example output:
     /// <code>
-    /// Id: 3f1cba8a..., Type: Light, Value: 195.39
-    /// Id: e4bef1a8..., Type: Light, Value: 986.66
+    /// Id: 3f1cba8a..., Type: Light, _value: 195.39
+    /// Id: e4bef1a8..., Type: Light, _value: 986.66
     /// </code>
     /// </remarks>
     /// 
