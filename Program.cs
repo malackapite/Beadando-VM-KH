@@ -10,6 +10,7 @@ namespace Beadando_VM_KH
 {
     internal partial class Program
     {
+        //Konfigurációs file-ból való kiolvasást kezelő objektum építése.
         static readonly IConfiguration config = new ConfigurationBuilder()
             .SetBasePath(AppDbContext.BasePath)
             .AddJsonFile("appconfig.json", false, true)
