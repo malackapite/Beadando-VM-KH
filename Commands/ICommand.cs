@@ -9,6 +9,7 @@ namespace Beadando_VM_KH.Commands
     /// <summary>
     /// Interface for commands in the central station application.
     /// <author>malackapite</author>
+    /// 
     /// </summary>
     public interface ICommand
     {

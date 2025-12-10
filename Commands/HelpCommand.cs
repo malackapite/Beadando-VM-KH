@@ -25,6 +25,7 @@ namespace Beadando_VM_KH.Commands
     /// <param name="commands">
     /// A dictionary of all commands registered in the system, keyed by their command names.
     /// </param>
+    /// 
     /// <author>malackapite</author>
     internal class HelpCommand(IDictionary<string, ICommand> commands) : ICommand
     {

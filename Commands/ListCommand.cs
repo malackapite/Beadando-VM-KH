@@ -23,6 +23,7 @@ namespace Beadando_VM_KH.Commands
     /// Id: e4bef1a8..., Type: Light, Value: 986.66
     /// </code>
     /// </remarks>
+    /// 
     /// <author>malackapite</author>
     internal class ListCommand(CentralStation centralStation) : ICommand
     {

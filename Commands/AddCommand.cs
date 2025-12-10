@@ -24,6 +24,7 @@ namespace Beadando_VM_KH.Commands
     /// </code>
     /// </remarks>
     /// <param name="centralStation">The central station instance to which the sensor will be added.</param>
+    /// 
     /// <author>malackapite</author>
     internal class AddCommand(CentralStation centralStation) : ICommand
     {

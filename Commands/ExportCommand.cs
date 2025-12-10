@@ -31,7 +31,7 @@ namespace Beadando_VM_KH.Commands
     /// </code>
     /// </remarks>
     /// <param name="centralStation">The central station instance containing the sensors to export.</param>
-
+    ///
     /// <author>malackapite</author>
     internal partial class ExportCommand(CentralStation centralStation) : ICommand
     {

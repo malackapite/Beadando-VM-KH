@@ -21,6 +21,7 @@ namespace Beadando_VM_KH.Commands
     /// </code>
     /// </remarks>
     /// <param name="centralStation">The central station instance that manages registered sensors.</param>
+    /// 
     /// <author>malackapite</author>
     internal class RemoveCommand(CentralStation centralStation) : ICommand
     {

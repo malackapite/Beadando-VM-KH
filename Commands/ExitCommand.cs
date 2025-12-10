@@ -18,6 +18,7 @@ namespace Beadando_VM_KH.Commands
     /// Exiting application...
     /// </code>
     /// </remarks>
+    /// 
     /// <author>malackapite</author>
     internal class ExitCommand : ICommand
     {
