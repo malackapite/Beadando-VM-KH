@@ -16,10 +16,25 @@ namespace Beadando_VM_KH
             .AddJsonFile("appconfig.json", false, true)
             .Build()
         ;
-            
+
+        /// <summary>
+        /// Entry point of the application. Initializes configuration, sets up the central station and command handlers, and starts the interactive command loop.
+        /// </summary>
+        /// <remarks>
+        /// The method performs the following steps:
+        /// <list type="bullet">
+        ///   <item>Loads application configuration from "appconfig.json".</item>
+        ///   <item>Creates a <see cref="CentralStation"/> instance to manage sensors.</item>
+        ///   <item>Initializes available commands (add, remove, list, etc. ).</item>
+        ///   <item>Starts an infinite loop that reads user input and executes commands.</item>
+        /// </list>
+        /// Invalid or unknown commands result in a message prompting the user to use "help".
+        /// </remarks>
+        /// 
+        /// <author>malackapite</author>
         static void Main()
         {
-            CentralStation centralStation = new();
+            CentralStation centralStation = new(config);
             Dictionary<string, ICommand> commands = [];
 
             commands["add"] = new AddCommand(centralStation);
